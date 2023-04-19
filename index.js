@@ -55,19 +55,11 @@ bot.onText(/\/prices/, async (message) => {
 
   bot.sendMessage(chatID, "Fetching data, please wait a few seconds.....");
 
-  const opts = {
-    reply_markup: {
-      keyboard: [["FAQ"], ["Buy"]],
-    },
-    parse_mode: "Markdown",
-  };
-
   data = await fetchData();
   await data.data.map((item) => {
     msg += `Model: ${item.name}\nPrice: ${item.prices[0].price} ${item.prices[0].currency}\n\n`;
-  }, opts);
+  });
 
-  console.log(msg);
   await bot.sendMessage(chatID, msg);
 });
 
