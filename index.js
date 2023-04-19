@@ -3,6 +3,7 @@ const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const fetchData = require("./fetchPrices");
+const User = require("./modals/User");
 
 const TGtoken = process.env.TGTOKEN;
 const URL = process.env.DB_URL;
@@ -64,18 +65,45 @@ bot.onText(/\/prices/, async (message) => {
 });
 
 //SUBSCRIBE
+bot.onText(/\/subscribe/, async (message) => {
+  let chatID = message.chat.id;
+  let username = message.from.username;
+  let firstname = message.from.first_name;
+  let lastname = message.from.last_name;
 
-//PORT
-app.listen(PORT);
+  try {
+    const response = await User.find({ userName: username });
+    if (response.length == 0) {
+      const user = new User({
+        firstName: firstname,
+        lastName: lastname,
+        userName: username,
+        ID: chatID,
+      });
+      await user.save();
+      await bot.sendMessage(
+        chatID,
+        "You have been subscribed to daily updates"
+      );
+    } else {
+      await bot.sendMessage(
+        chatID,
+        "You are already subscribed to daily updates"
+      );
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-// mongoose
-//   .connect(URL)
-//   .then(() => {
-//     console.log("Connected to DB");
-//     app.listen(PORT, () => {
-//       console.log(`Server is running on port ${PORT}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+mongoose
+  .connect(URL)
+  .then(() => {
+    console.log("Connected to DB");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
