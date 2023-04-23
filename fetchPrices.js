@@ -1,18 +1,18 @@
 require("dotenv").config();
-const APIToken = process.env.APITOKEN;
+const axios = require("axios");
+const token = process.env.APITOKEN;
+
+const url =
+  "https://api.device-specs.io/api/smartphones?filters[cpu_type][$eq]=Apple&populate=*";
 
 const fetchPrices = async () => {
   try {
-    const response = await fetch(
-      "https://api.device-specs.io/api/smartphones?filters[cpu_type][$eq]=Apple&populate=*",
-      {
-        headers: {
-          Authorization: "Bearer " + APIToken,
-        },
-      }
-    );
-    const data = await response.json();
-    return data;
+    const response = await axios({
+      method: "get",
+      url: url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
   } catch (err) {
     console.log(err);
     return err.message;

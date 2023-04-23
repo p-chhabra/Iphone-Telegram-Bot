@@ -42,7 +42,9 @@ bot.on("message", (message) => {
 bot.onText(/\/hello/, (message) => {
   let chatID = message.chat.id;
   let userName = message.from.username;
-  let name = message.from.first_name + ` ` + message.from.last_name;
+  let name =
+    message.from.first_name +
+    (message.from.last_name ? ` ${message.from.last_name}` : "");
 
   let msg = `Hello ${name}, how can i help?`;
 
@@ -58,7 +60,7 @@ bot.onText(/\/prices/, async (message) => {
   bot.sendMessage(chatID, "Fetching data, please wait a few seconds.....");
 
   data = await fetchData();
-  await data.data.map((item) => {
+  await data.data.data.map((item) => {
     msg += `Model: ${item.name}\nPrice: ${item.prices[0].price} ${item.prices[0].currency}\n\n`;
   });
 
@@ -103,8 +105,11 @@ bot.onText(/\/unsubscribe/, async (message) => {
   let username = message.from.username;
 
   try {
-    await User.deleteOne({ userName: username });
-    await bot.sendMessage(chatID, "You have been unsubscribed");
+    let response = await User.deleteOne({ userName: username });
+    console.log(response);
+    if (response.deletedCount == 0)
+      await bot.sendMessage(chatID, "You are not subscribed");
+    else await bot.sendMessage(chatID, "You have been unsubscribed");
   } catch (err) {
     console.log(err);
   }
@@ -118,7 +123,7 @@ const sendUpdates = async () => {
   console.log(users);
 
   users.map(async (item) => {
-    await data.data.map((item) => {
+    await data.data.data.map((item) => {
       msg += `Model: ${item.name}\nPrice: ${item.prices[0].price} ${item.prices[0].currency}\n\n`;
     });
 
