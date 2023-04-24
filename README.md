@@ -2,4 +2,4 @@
 Telegram Bot for latest iPhone Prices
 
 ## Chat Now
-t.me/iPhonePrices_bot
+Link: t.me/iPhonePrices_bot
